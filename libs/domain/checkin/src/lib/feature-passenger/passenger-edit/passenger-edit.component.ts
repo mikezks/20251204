@@ -26,10 +26,10 @@ export class PassengerEditComponent {
   });
 
   readonly id = input(0, { transform: numberAttribute });
-  protected readonly passengerResource = httpResource<Passenger>(() => ({
-    url: 'https://demo.angulararchitects.io/api/passenger',
-    params: { id: this.id() }
-  }), { defaultValue: initialPassenger });
+  protected readonly passengerResource = httpResource<Passenger>(
+    () => `https://demo.angulararchitects.io/api/passenger?id=${ this.id() }`,
+    { defaultValue: initialPassenger }
+  );
 
   constructor() {
     effect(() => {
