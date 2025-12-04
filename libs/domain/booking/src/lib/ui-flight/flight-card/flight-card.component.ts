@@ -1,5 +1,5 @@
 import { DatePipe, NgStyle } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, input, model, output, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, model, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { injectCdBlink } from '@flight-demo/shared/core';
 import { Flight } from '../../logic-flight/model/flight';
@@ -47,7 +47,7 @@ import { Flight } from '../../logic-flight/model/flight';
     <!-- {{ blink() }} -->
   `
 })
-export class FlightCardComponent {
+export class FlightCardComponent /* implements OnInit */ {
   blink = injectCdBlink();
 
   readonly item = input.required<Flight>();
@@ -55,8 +55,20 @@ export class FlightCardComponent {
   readonly delayTrigger = output<Flight>();
 
   constructor() {
-    effect(() => untracked(() => console.log(this.item())));
+    // (1) Access input value at the right time w/ an effect and one-time run w/ untracked.
+    // effect(() => untracked(() => console.log(this.item())));
+
+    // (2) Assign EffectRef and use destory after first run.
+    /* const loggerEffect = effect(() => {
+      console.log(this.item());
+      loggerEffect.destroy();
+    }); */
   }
+  
+  // (3) Catch the right lifecycle point of time to access input in a safe way.
+  /* ngOnInit(): void {
+    console.log(this.item());
+  } */
 
   toggleSelection(): void {
     this.selected.update(curr => !curr);

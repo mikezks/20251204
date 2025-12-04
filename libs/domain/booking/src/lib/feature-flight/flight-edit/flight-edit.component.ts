@@ -31,8 +31,8 @@ export class FlightEditComponent implements OnChanges {
     );
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['flight'].previousValue !== changes['flight'].currentValue) {
+  ngOnChanges(changes: SimpleChanges<FlightEditComponent>): void {
+    if (changes?.flight?.previousValue !== changes?.flight?.currentValue) {
       this.editForm.patchValue(this.flight);
     }
   }
