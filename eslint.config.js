@@ -13,6 +13,7 @@ module.exports = defineConfig([
       tseslint.configs.recommended,
       tseslint.configs.stylistic,
       angular.configs.tsRecommended,
+      
     ],
     processor: angular.processInlineTemplates,
     rules: {
@@ -30,6 +31,14 @@ module.exports = defineConfig([
           type: "element",
           prefix: "app",
           style: "kebab-case",
+        },
+      ],
+      '@typescript-eslint/typedef': [
+        'warn',
+        {
+          memberVariableDeclaration: true,
+          propertyDeclaration: true,
+          variableDeclaration: true
         },
       ],
     },

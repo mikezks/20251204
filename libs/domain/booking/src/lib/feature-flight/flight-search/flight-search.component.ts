@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, signal, untracked } from '@angular/core';
+import { Component, computed, effect, signal, untracked, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Flight } from '../../logic-flight/model/flight';
 import { injectTicketsFacade } from '../../logic-flight/state/facade';
 import { FlightCardComponent } from '../../ui-flight/flight-card/flight-card.component';
 import { FlightFilterComponent } from '../../ui-flight/flight-filter/flight-filter.component';
+import { FlightFilter } from '../../logic-flight/model/flight-filter';
 
 
 @Component({
@@ -20,7 +21,7 @@ import { FlightFilterComponent } from '../../ui-flight/flight-filter/flight-filt
 export class FlightSearchComponent {
   private ticketsFacade = injectTicketsFacade();
 
-  protected filter = signal({
+  protected filter: WritableSignal<FlightFilter> = signal<FlightFilter>({
     from: 'Paris',
     to: 'New York',
     urgent: false
