@@ -1,7 +1,8 @@
+import { httpResource } from '@angular/common/http';
 import { Component, effect, inject, input, numberAttribute } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { PassengerService } from '../../logic-passenger/data-access/passenger.service';
+import { initialPassenger, Passenger } from '../../logic-passenger/model/passenger';
 import { validatePassengerStatus } from '../../util-validation/passenger-validator/passenger-status.validator';
 
 
@@ -14,7 +15,6 @@ import { validatePassengerStatus } from '../../util-validation/passenger-validat
   templateUrl: './passenger-edit.component.html'
 })
 export class PassengerEditComponent {
-  private passengerService = inject(PassengerService);
   protected editForm = inject(NonNullableFormBuilder).group({
     id: [0],
     firstName: [''],
@@ -26,7 +26,10 @@ export class PassengerEditComponent {
   });
 
   readonly id = input(0, { transform: numberAttribute });
-  protected readonly passengerResource = this.passengerService.findByIdAsResource(this.id);
+  protected readonly passengerResource = httpResource<Passenger>(() => ({
+    url: 'https://demo.angulararchitects.io/api/passenger',
+    params: { id: this.id() }
+  }), { defaultValue: initialPassenger });
 
   constructor() {
     effect(() => {

@@ -43,6 +43,8 @@
       }
     </form>
 
+    <p>Status: {{ passengerResource.status() }}</p>
+
     <div class="form-group">
       <a
         [routerLink]="['..', this.id()-1]"
