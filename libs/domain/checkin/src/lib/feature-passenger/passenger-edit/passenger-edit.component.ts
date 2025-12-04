@@ -5,12 +5,14 @@ import { pipe, switchMap } from 'rxjs';
 import { PassengerService } from '../../logic-passenger/data-access/passenger.service';
 import { initialPassenger } from '../../logic-passenger/model/passenger';
 import { validatePassengerStatus } from '../../util-validation/passenger-validator/passenger-status.validator';
+import { RouterLink } from '@angular/router';
 
 
 @Component({
   selector: 'app-passenger-edit',
   imports: [
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterLink
   ],
   templateUrl: './passenger-edit.component.html'
 })
