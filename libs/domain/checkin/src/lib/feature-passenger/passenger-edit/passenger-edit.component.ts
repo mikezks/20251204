@@ -1,11 +1,8 @@
 import { Component, effect, inject, input, numberAttribute } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { signalOperators } from '@flight-demo/shared/core';
-import { pipe, switchMap } from 'rxjs';
-import { PassengerService } from '../../logic-passenger/data-access/passenger.service';
-import { initialPassenger } from '../../logic-passenger/model/passenger';
-import { validatePassengerStatus } from '../../util-validation/passenger-validator/passenger-status.validator';
 import { RouterLink } from '@angular/router';
+import { PassengerService } from '../../logic-passenger/data-access/passenger.service';
+import { validatePassengerStatus } from '../../util-validation/passenger-validator/passenger-status.validator';
 
 
 @Component({
@@ -29,16 +26,18 @@ export class PassengerEditComponent {
   });
 
   readonly id = input(0, { transform: numberAttribute });
-  private readonly passenger = signalOperators(this.id, pipe(
-    switchMap(id => this.passengerService.findById(id))
-  ), initialPassenger);
+  protected readonly passengerResource = this.passengerService.findByIdAsResource(this.id);
 
   constructor() {
-    effect(() => console.log(this.id()));
-    effect(() => this.editForm.patchValue(this.passenger()));
+    effect(() => {
+      if (this.passengerResource.hasValue()) {
+        this.editForm.patchValue(this.passengerResource.value());
+      }
+    });
   }
 
   protected save(): void {
-    console.log(this.editForm.value);
+    this.passengerResource.set(this.editForm.getRawValue());
+    console.log(this.passengerResource.value());
   }
 }
