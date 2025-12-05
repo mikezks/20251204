@@ -1,7 +1,7 @@
 import { httpResource } from '@angular/common/http';
 import { Component, input, numberAttribute } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Field, form, required, schema } from '@angular/forms/signals';
+import { Field, form, required, schema, validate } from '@angular/forms/signals';
 import { RouterLink } from '@angular/router';
 import { initialPassenger, Passenger } from '../../logic-passenger/model/passenger';
 
@@ -9,6 +9,21 @@ import { initialPassenger, Passenger } from '../../logic-passenger/model/passeng
 export const passengerSchema = schema<Passenger>(passengerPath => {
   required(passengerPath.name, {
     message: 'This field is mandatory, please enter a value.'
+  });
+  validate(passengerPath.firstName, ({ value }) => {
+    const validFirstnames = [
+      'Hanna', 'Emma', 'Sofia'
+    ];
+
+    if (!validFirstnames.includes(value())) {
+      return {
+        kind: 'forbiddenFirstname',
+        message: 'The entered firstname is not allowed. Please use one of the following: '
+          + validFirstnames.join(', ')
+      };
+    }
+
+    return null;
   });
 });
 
@@ -29,10 +44,6 @@ export class PassengerEditComponent {
     { defaultValue: initialPassenger }
   );
   protected editForm = form(this.passengerResource.value, passengerSchema);
-
-  constructor() {
-    setTimeout(() => this.editForm.firstName().value.set('Harry'), 5_000);
-  }
 
   protected save(): void {
     console.log(

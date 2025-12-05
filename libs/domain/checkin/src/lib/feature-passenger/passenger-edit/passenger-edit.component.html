@@ -14,6 +14,9 @@
         <label for="firstname">Firstname:</label>
         <input id="firstname" [field]="editForm.firstName" class="form-control" />
       </div>
+      @for (error of editForm.firstName().errors(); track error.kind) {
+        <div class="alert alert-danger">{{ error.message }}</div>
+      }
 
       <div class="form-group">
         <label for="name">Lastname:</label>
@@ -37,13 +40,6 @@
         <label for="status">Status:</label>
         <input id="status" [field]="editForm.passengerStatus" class="form-control" />
       </div>
-      <!-- @if (editForm.controls.passengerStatus.hasError('passengerStatus')) {
-        <div class="alert alert-danger">
-          Please enter a valid passenger status.<br>
-          The following values are allowed:
-          {{ editForm.controls.passengerStatus.errors?.['passengerStatus'].validStatus.join(', ') }}
-        </div>
-      } -->
     </form>
 
     <p>Status: {{ passengerResource.status() }}</p>
