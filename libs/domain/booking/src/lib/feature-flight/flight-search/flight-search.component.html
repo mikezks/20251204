@@ -6,10 +6,7 @@
   </div>
   
   <div class="card-body">
-    <app-flight-filter
-      [filter]="store.filter()"
-      (filterChange)="flightEvents.filterChanged($event)"
-    >
+    <app-flight-filter [(filter)]="store.writableFilter">
       @if (flights.length) {
         <div class="flight-filter-info">
           {{ flights.length }} flights found!

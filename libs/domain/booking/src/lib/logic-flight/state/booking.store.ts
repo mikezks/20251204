@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
-import { addMinutes } from '@flight-demo/shared/core';
+import { addMinutes, delegated } from '@flight-demo/shared/core';
 import { mapResponse } from '@ngrx/operators';
 import { signalStore, type, withComputed, withProps, withState } from '@ngrx/signals';
 import { entityConfig, removeAllEntities, setAllEntities, updateEntity, withEntities } from '@ngrx/signals/entities';
-import { Events, on, withEffects, withReducer } from '@ngrx/signals/events';
+import { Events, injectDispatch, on, withEffects, withReducer } from '@ngrx/signals/events';
 import { switchMap } from 'rxjs';
 import { FlightService } from '../data-access/flight.service';
 import { Flight } from '../model/flight';
@@ -44,10 +44,6 @@ export const BookingStore = signalStore(
   withComputed(store => ({
     delayedFlights: () => store.flightEntities().filter(flight => flight.delayed),
   })),
-  withProps(() => ({
-    _events: inject(Events),
-    _flightService: inject(FlightService),
-  })),
   // Updaters
   withReducer(
     on(flightEvents.filterChanged, ({ payload: filter }) => ({ filter })),
@@ -64,6 +60,14 @@ export const BookingStore = signalStore(
     })),
     on(flightEvents.flightsResetTriggered, () => removeAllEntities(flightConfig)),
   ),
+  withProps(store => ({
+    _events: inject(Events),
+    _flightService: inject(FlightService),
+    writableFilter: delegated(
+      store.filter,
+      injectDispatch(flightEvents).filterChanged
+    ),
+  })),
   // Side-Effects
   withEffects(({
     _events: events,
