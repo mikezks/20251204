@@ -1,5 +1,6 @@
 import { tapResponse } from '@ngrx/operators';
-import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals';
+import { patchState, signalStore, type, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals';
+import { entityConfig, removeAllEntities, setAllEntities, updateEntity, withEntities } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { Flight } from '../model/flight';
 import { FlightFilter } from '../model/flight-filter';
@@ -12,7 +13,6 @@ import { addMinutes } from '@flight-demo/shared/core';
 export interface BookingState {
   filter: FlightFilter;
   basket: Record<number, boolean>;
-  flights: Flight[];
 }
 
 export const initialBookingState: BookingState = {
@@ -24,9 +24,14 @@ export const initialBookingState: BookingState = {
   basket: {
     3: true,
     5: true,
-  },
-  flights: []
+  }
 };
+
+export const flightConfig = entityConfig({
+  entity: type<Flight>(),
+  collection: 'flight',
+  // selectId: flight => flight.id
+});
 
 
 export const BookingStore = signalStore(
@@ -34,8 +39,9 @@ export const BookingStore = signalStore(
   { providedIn: 'root' },
   // State
   withState(initialBookingState),
+  withEntities(flightConfig),
   withComputed(store => ({
-    delayedFlights: () => store.flights().filter(flight => flight.delayed),
+    delayedFlights: () => store.flightEntities().filter(flight => flight.delayed),
   })),
   withProps(() => ({
     _flightService: inject(FlightService)
@@ -43,22 +49,23 @@ export const BookingStore = signalStore(
   // Updaters
   withMethods(store => ({
     setFilter: (filter: FlightFilter) => patchState(store, { filter }),
-    setFlights: (flights: Flight[]) => patchState(store, { flights }),
+    setFlights: (flights: Flight[]) => patchState(store, 
+      setAllEntities(flights, flightConfig)
+    ),
     updateBasket: (id: number, selected: boolean) => patchState(store, state => ({
       basket: {
         ...state.basket,
         [id]: selected
       }
     })),
-    delayFlight: (id: number, addMin = 5) => patchState(store, state => ({
-      flights: state.flights.map(
-        flight => flight.id === id ? {
-          ...flight,
-          date: addMinutes(flight.date, addMin)
-        } : flight
-      )
-    })),
-    resetFlights: () => patchState(store, { flights: [] })
+    delayFlight: (id: number, addMin = 5) => patchState(store, updateEntity({
+      id,
+      changes: flight => ({
+        ...flight,
+        date: addMinutes(flight.date, addMin)
+      })
+    }, flightConfig)),
+    resetFlights: () => patchState(store, removeAllEntities(flightConfig)),
   })),
   // Side-Effects
   withMethods(store => ({
