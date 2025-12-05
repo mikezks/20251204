@@ -14,6 +14,7 @@
         <label for="firstname">Firstname:</label>
         <input id="firstname" [field]="editForm.firstName" class="form-control" />
       </div>
+      <div class="alert alert-info">Allowed Firstnames: {{ allowedFirstnames() }}</div>
       @for (error of editForm.firstName().errors(); track error.kind) {
         <div class="alert alert-danger">{{ error.message }}</div>
       }

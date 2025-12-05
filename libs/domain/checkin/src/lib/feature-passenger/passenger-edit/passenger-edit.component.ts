@@ -1,15 +1,20 @@
 import { httpResource } from '@angular/common/http';
-import { Component, input, numberAttribute } from '@angular/core';
+import { Component, computed, input, numberAttribute } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Field, form, required, schema, SchemaPath, validate } from '@angular/forms/signals';
+import { createMetadataKey, Field, form, metadata, required, schema, SchemaPath, validate } from '@angular/forms/signals';
 import { RouterLink } from '@angular/router';
 import { initialPassenger, Passenger } from '../../logic-passenger/model/passenger';
 
 
+// Custom Field Property
+const ALLOWED_FIRSTNAMES = createMetadataKey<string[]>();
+
+// Custom, parameterized Validator
 export function validateFirstname(
   firstnameField: SchemaPath<string>,
   validFirstnames: string[]
 ): void {
+  metadata(firstnameField, ALLOWED_FIRSTNAMES, () => validFirstnames);
   validate(firstnameField, ({ value }) =>
     validFirstnames.includes(value())
       ? null
@@ -48,6 +53,9 @@ export class PassengerEditComponent {
     { defaultValue: initialPassenger }
   );
   protected editForm = form(this.passengerResource.value, passengerSchema);
+  allowedFirstnames = computed(() =>
+    this.editForm.firstName().metadata(ALLOWED_FIRSTNAMES)?.join(', ')
+  );
 
   protected save(): void {
     console.log(
