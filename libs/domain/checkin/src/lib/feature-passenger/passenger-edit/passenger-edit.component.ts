@@ -1,31 +1,31 @@
 import { httpResource } from '@angular/common/http';
 import { Component, input, numberAttribute } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Field, form, required, schema, validate } from '@angular/forms/signals';
+import { Field, form, required, schema, SchemaPath, validate } from '@angular/forms/signals';
 import { RouterLink } from '@angular/router';
 import { initialPassenger, Passenger } from '../../logic-passenger/model/passenger';
 
+
+export function validateFirstname(firstnameField: SchemaPath<string>, validFirstnames: string[]) {
+  return validate(firstnameField, ({ value }) =>
+    validFirstnames.includes(value())
+      ? null
+      : {
+        kind: 'forbiddenFirstname',
+        message: 'The entered firstname is not allowed. Please use one of the following: '
+          + validFirstnames.join(', ')
+      }
+  );
+}
 
 export const passengerSchema = schema<Passenger>(passengerPath => {
   required(passengerPath.name, {
     message: 'This field is mandatory, please enter a value.',
     when: ({ value, valueOf }) => value() !== valueOf(passengerPath.firstName)
   });
-  validate(passengerPath.firstName, ({ value }) => {
-    const validFirstnames = [
-      'Hanna', 'Emma', 'Sofia'
-    ];
-
-    if (!validFirstnames.includes(value())) {
-      return {
-        kind: 'forbiddenFirstname',
-        message: 'The entered firstname is not allowed. Please use one of the following: '
-          + validFirstnames.join(', ')
-      };
-    }
-
-    return null;
-  });
+  validateFirstname(passengerPath.firstName, [
+    'Hanna', 'Emma', 'Sofia'
+  ]);
 });
 
 
