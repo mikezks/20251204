@@ -1,7 +1,7 @@
 import { httpResource } from '@angular/common/http';
-import { Component, input, numberAttribute, signal } from '@angular/core';
+import { Component, input, numberAttribute } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { form, Field } from '@angular/forms/signals';
+import { Field, form } from '@angular/forms/signals';
 import { RouterLink } from '@angular/router';
 import { initialPassenger, Passenger } from '../../logic-passenger/model/passenger';
 
@@ -16,29 +16,22 @@ import { initialPassenger, Passenger } from '../../logic-passenger/model/passeng
   templateUrl: './passenger-edit.component.html'
 })
 export class PassengerEditComponent {
-  protected readonly passenger = signal(initialPassenger);
-  protected editForm = form(this.passenger);
-
   readonly id = input(0, { transform: numberAttribute });
   protected readonly passengerResource = httpResource<Passenger>(
     () => `https://demo.angulararchitects.io/api/passenger?id=${ this.id() }`,
     { defaultValue: initialPassenger }
   );
+  protected editForm = form(this.passengerResource.value);
 
   constructor() {
-    /* effect(() => {
-      if (this.passengerResource.hasValue()) {
-        this.editForm.patchValue(this.passengerResource.value());
-      }
-    }); */
+    setTimeout(() => this.editForm.firstName().value.set('Harry'), 5_000);
   }
 
   protected save(): void {
-    // this.passengerResource.set(this.editForm.getRawValue());
-    // console.log(this.passengerResource.value());
     console.log(
       this.editForm().value(),
-      this.passenger()
+      this.passengerResource.value(),
+      this.editForm.id().value()
     );
   }
 }
