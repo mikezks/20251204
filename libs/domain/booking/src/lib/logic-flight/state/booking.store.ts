@@ -28,36 +28,6 @@ export const initialBookingState: BookingState = {
   flights: []
 };
 
-const entityState = {
-  entities: {
-    3: {
-      id: 3,
-      from: 'Hamburg',
-      to: 'Graz',
-      date: new Date().toISOString(),
-      delayed: false
-    },
-    4: {
-      id: 4,
-      from: 'Hamburg',
-      to: 'Graz',
-      date: new Date().toISOString(),
-      delayed: false
-    },
-    1: {
-      id: 1,
-      from: 'Hamburg',
-      to: 'Graz',
-      date: new Date().toISOString(),
-      delayed: false
-    }
-  } as Record<number, Flight>,
-  ids: [3, 4, 1]
-}
-
-const flights = entityState.ids.map(id => entityState.entities[id]);
-console.log(flights);
-
 
 export const BookingStore = signalStore(
   // DI Config
