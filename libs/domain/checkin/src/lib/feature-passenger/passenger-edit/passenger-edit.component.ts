@@ -6,8 +6,11 @@ import { RouterLink } from '@angular/router';
 import { initialPassenger, Passenger } from '../../logic-passenger/model/passenger';
 
 
-export function validateFirstname(firstnameField: SchemaPath<string>, validFirstnames: string[]) {
-  return validate(firstnameField, ({ value }) =>
+export function validateFirstname(
+  firstnameField: SchemaPath<string>,
+  validFirstnames: string[]
+): void {
+  validate(firstnameField, ({ value }) =>
     validFirstnames.includes(value())
       ? null
       : {
