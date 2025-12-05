@@ -7,7 +7,9 @@ import { initialPassenger, Passenger } from '../../logic-passenger/model/passeng
 
 
 export const passengerSchema = schema<Passenger>(passengerPath => {
-  required(passengerPath.name);
+  required(passengerPath.name, {
+    message: 'This field is mandatory, please enter a value.'
+  });
 });
 
 
