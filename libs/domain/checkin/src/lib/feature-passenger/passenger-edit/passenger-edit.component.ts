@@ -1,9 +1,14 @@
 import { httpResource } from '@angular/common/http';
 import { Component, input, numberAttribute } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Field, form } from '@angular/forms/signals';
+import { Field, form, required, schema } from '@angular/forms/signals';
 import { RouterLink } from '@angular/router';
 import { initialPassenger, Passenger } from '../../logic-passenger/model/passenger';
+
+
+export const passengerSchema = schema<Passenger>(passengerPath => {
+  required(passengerPath.name);
+});
 
 
 @Component({
@@ -21,7 +26,7 @@ export class PassengerEditComponent {
     () => `https://demo.angulararchitects.io/api/passenger?id=${ this.id() }`,
     { defaultValue: initialPassenger }
   );
-  protected editForm = form(this.passengerResource.value);
+  protected editForm = form(this.passengerResource.value, passengerSchema);
 
   constructor() {
     setTimeout(() => this.editForm.firstName().value.set('Harry'), 5_000);
