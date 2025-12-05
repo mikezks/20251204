@@ -6,6 +6,7 @@ import { FlightFilter } from '../model/flight-filter';
 import { pipe, switchMap } from 'rxjs';
 import { inject } from '@angular/core';
 import { FlightService } from '../data-access/flight.service';
+import { addMinutes } from '@flight-demo/shared/core';
 
 
 export interface BookingState {
@@ -49,6 +50,15 @@ export const BookingStore = signalStore(
         [id]: selected
       }
     })),
+    delayFlight: (id: number, addMin = 5) => patchState(store, state => ({
+      flights: state.flights.map(
+        flight => flight.id === id ? {
+          ...flight,
+          date: addMinutes(flight.date, addMin)
+        } : flight
+      )
+    })),
+    resetFlights: () => patchState(store, { flights: [] })
   })),
   // Side-Effects
   withMethods(store => ({

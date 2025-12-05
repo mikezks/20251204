@@ -16,7 +16,7 @@
         </div>
       }
       @if (flights.length) {
-        <button (click)="reset()"
+        <button (click)="store.resetFlights()"
           class="btn btn-default flight-filter-button"
         >Reset</button>
       }
@@ -31,7 +31,7 @@
         [item]="flight"
         [selected]="store.basket()[flight.id]"
         (selectedChange)="store.updateBasket(flight.id, $event)"
-        (delayTrigger)="delay($event)"
+        (delayTrigger)="store.delayFlight(flight.id)"
       />
     </div>
   }
