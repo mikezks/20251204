@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Flight } from '@flight-demo/domain/booking-api-boarding';
-import { FlightFilter } from '../../logic-flight/model/flight-filter';
 import { BookingStore } from '../../logic-flight/state/booking.store';
 import { FlightCardComponent } from '../../ui-flight/flight-card/flight-card.component';
 import { FlightFilterComponent } from '../../ui-flight/flight-filter/flight-filter.component';
@@ -19,23 +18,7 @@ import { FlightFilterComponent } from '../../ui-flight/flight-filter/flight-filt
   templateUrl: './flight-search.component.html',
 })
 export class FlightSearchComponent {
-  private store = inject(BookingStore);
-
-  protected filter = this.store.filter;
-  protected basket = this.store.basket;
-  protected flights = this.store.flights;
-
-  constructor() {
-    effect(() => this.search());
-  }
-
-  protected search(): void {
-    if (!this.filter.from || !this.filter.to) {
-      return;
-    }
-
-    this.store.loadFlights(this.filter());
-  }
+  protected store = inject(BookingStore);
 
   protected delay(flight: Flight): void {
     const oldFlight = flight;
@@ -48,17 +31,9 @@ export class FlightSearchComponent {
       delayed: true
     };
 
-    this.store.setFlights(this.flights().map(
+    this.store.setFlights(this.store.flights().map(
       flight => flight.id === newFlight.id ? newFlight : flight
     ));
-  }
-
-  protected setFilter(filter: FlightFilter): void {
-    this.store.setFilter(filter);
-  }
-
-  protected updateBasket(id: number, selected: boolean): void {
-    this.store.updateBasket(id, selected);
   }
 
   protected reset(): void {

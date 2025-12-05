@@ -1,5 +1,5 @@
 import { tapResponse } from '@ngrx/operators';
-import { patchState, signalStore, withComputed, withMethods, withProps, withState } from '@ngrx/signals';
+import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { Flight } from '../model/flight';
 import { FlightFilter } from '../model/flight-filter';
@@ -63,4 +63,8 @@ export const BookingStore = signalStore(
       ))
     )),
   })),
+  // Lifecycle Hook
+  withHooks(store => ({
+    onInit: () => store.loadFlights(store.filter),
+  }))
 );
