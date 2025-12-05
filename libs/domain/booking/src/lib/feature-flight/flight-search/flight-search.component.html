@@ -23,14 +23,12 @@
 
 <div class="row">
   @for (flight of flights; track flight.id) {
+    @let item = store.createFlightWithDelayUpdater(flight);
+    @let basketSelection = store.createBasketSelection(flight);
     <div class="col-xs-12 col-sm-6 col-md-4">
       <app-flight-card
-        [item]="flight"
-        [selected]="store.basket()[flight.id]"
-        (selectedChange)="flightEvents.flightSelectionChanged({
-          id: flight.id, selected: $event
-        })"
-        (delayTrigger)="flightEvents.flightDelayTriggered({ id: flight.id })"
+        [(item)]="item"
+        [(selected)]="basketSelection"
       />
     </div>
   }

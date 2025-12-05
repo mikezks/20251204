@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { addMinutes, delegated } from '@flight-demo/shared/core';
 import { mapResponse } from '@ngrx/operators';
-import { signalStore, type, withComputed, withProps, withState } from '@ngrx/signals';
+import { signalStore, type, withComputed, withMethods, withProps, withState } from '@ngrx/signals';
 import { entityConfig, removeAllEntities, setAllEntities, updateEntity, withEntities } from '@ngrx/signals/entities';
 import { Events, injectDispatch, on, withEffects, withReducer } from '@ngrx/signals/events';
 import { switchMap } from 'rxjs';
@@ -44,6 +44,11 @@ export const BookingStore = signalStore(
   withComputed(store => ({
     delayedFlights: () => store.flightEntities().filter(flight => flight.delayed),
   })),
+  withProps(() => ({
+    _events: inject(Events),
+    _flightService: inject(FlightService),
+    _flightDispatch: injectDispatch(flightEvents),
+  })),
   // Updaters
   withReducer(
     on(flightEvents.filterChanged, ({ payload: filter }) => ({ filter })),
@@ -60,12 +65,23 @@ export const BookingStore = signalStore(
     })),
     on(flightEvents.flightsResetTriggered, () => removeAllEntities(flightConfig)),
   ),
-  withProps(store => ({
-    _events: inject(Events),
-    _flightService: inject(FlightService),
+  // Writable Facade
+  withMethods(store => ({
     writableFilter: delegated(
       store.filter,
-      injectDispatch(flightEvents).filterChanged
+      store._flightDispatch.filterChanged
+    ),
+    createFlightWithDelayUpdater: (flight: Flight) => delegated(
+      () => flight,
+      () => store._flightDispatch.flightDelayTriggered({
+        id: flight.id
+      })
+    ),
+    createBasketSelection: (flight: Flight) => delegated(
+      () => store.basket()[flight.id],
+      selected => store._flightDispatch.flightSelectionChanged(
+        { id: flight.id, selected }
+      )
     ),
   })),
   // Side-Effects

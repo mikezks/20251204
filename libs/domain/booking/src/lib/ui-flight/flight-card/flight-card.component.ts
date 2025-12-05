@@ -53,7 +53,7 @@ export class FlightCardComponent {
   @Input() item?: Flight;
   @Input() selected = false;
   @Output() selectedChange = new EventEmitter<boolean>();
-  @Output() delayTrigger = new EventEmitter<Flight>();
+  @Output() itemChange = new EventEmitter<Flight>();
 
   toggleSelection(): void {
     this.selected = !this.selected;
@@ -61,6 +61,6 @@ export class FlightCardComponent {
   }
 
   delay(): void {
-    this.delayTrigger.emit(this.item);
+    this.itemChange.emit(this.item);
   }
 }
